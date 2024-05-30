@@ -11,6 +11,13 @@ from typing import AnyStr, cast, IO
 
 ZIP_UNIX_SYSTEM = 3
 
+def is_zip(file: Path) -> bool:
+    try:
+        with ZipFile(file, "r") as zf:
+            return zf.testzip() is None
+    except Exception as ex:
+        return False
+
 
 def zip_extract_all_with_executable_permission(file: Path, target_dir: Path) -> None:
     with ZipFile(file, "r") as zf:
@@ -29,7 +36,7 @@ def tar_extract_all_with_executable_permission(file: Path, target_dir: Path) -> 
 
 
 def extract_all_with_executable_permission(file: Path, target_dir: Path) -> None:
-    if str(file).endswith(".zip"):
+    if is_zip(file):
         zip_extract_all_with_executable_permission(file, target_dir)
     else:
         tar_extract_all_with_executable_permission(file, target_dir)
